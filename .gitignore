@@ -70,3 +70,4 @@ backend/models/*.pkl
 !backend/models/.gitkeep
 deepfake/
 backend/deepfake
+backend/Dockerfile
