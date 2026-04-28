@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
+}
+
+.dark body {
+  background: linear-gradient(to bottom, #0f172a, #1e293b);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #e2e8f0;
+    background-color: #0f172a;
+  }
+}
+
+.dropzone {
+  @apply border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-200;
+}
+
+.dropzone:hover {
+  @apply border-primary-500 bg-primary-50 dark:bg-primary-900/20;
+}
+
+.dropzone.active {
+  @apply border-primary-500 bg-primary-100 dark:bg-primary-900/30;
+}
+
+.btn-primary {
+  @apply px-6 py-3 bg-primary-600 text-white rounded-lg font-medium 
+         hover:bg-primary-700 transition-colors duration-200
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply px-6 py-3 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 
+         rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-600 
+         transition-colors duration-200;
+}
+
+.card {
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6;
+}
+
+.badge {
+  @apply px-3 py-1 rounded-full text-sm font-medium;
+}
+
+.badge-success {
+  @apply bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400;
+}
+
+.badge-danger {
+  @apply bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400;
+}
+
+.progress-bar {
+  @apply h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
+}
+
+.progress-bar-fill {
+  @apply h-full bg-primary-500 transition-all duration-300;
+}
