@@ -1,0 +1,7 @@
+# pyright config
+{
+  "include": ["app"],
+  "exclude": ["node_modules", ".venv"],
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false
+}

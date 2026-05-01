@@ -6,7 +6,10 @@ Main entry point for the API server.
 import warnings
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+<<<<<<< HEAD
 from fastapi.staticfiles import StaticFiles
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 from contextlib import asynccontextmanager
 from loguru import logger
 import torch
@@ -52,6 +55,10 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
@@ -60,9 +67,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+<<<<<<< HEAD
 app.include_router(api_router, prefix="/api/v1")
 
 app.mount("/static", StaticFiles(directory=str(settings.UPLOAD_DIR)), name="static")
+=======
+
+app.include_router(api_router, prefix="/api/v1")
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
 
 @app.get("/")
@@ -75,7 +87,13 @@ async def health_check():
     return {
         "status": "healthy",
         "cuda_available": torch.cuda.is_available(),
+<<<<<<< HEAD
         "cuda_device_count": torch.cuda.device_count() if torch.cuda.is_available() else 0,
+=======
+        "cuda_device_count": torch.cuda.device_count()
+        if torch.cuda.is_available()
+        else 0,
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     }
 
 
@@ -83,5 +101,9 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
+<<<<<<< HEAD
         app, host="0.0.0.0", port=8000, reload=False, log_level="info"
+=======
+        "app.main:app", host="0.0.0.0", port=8000, reload=True, log_level="info"
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     )

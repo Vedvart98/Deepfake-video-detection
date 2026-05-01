@@ -1,9 +1,20 @@
+<<<<<<< HEAD
 from pathlib import Path
 from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks, Request
 from fastapi.responses import JSONResponse, FileResponse
 from loguru import logger
 import uuid
 import time
+=======
+"""
+Video analysis endpoints.
+"""
+from pathlib import Path
+from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks, Request
+from fastapi.responses import JSONResponse
+from loguru import logger
+import uuid
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 from app.models.schemas import (
     AnalysisResponseSchema,
     JobStatus,
@@ -16,12 +27,23 @@ from app.models.schemas import (
 from app.ml.model_manager import ModelManager
 from app.services.video_processor import VideoProcessor
 from app.services.face_detector import FaceDetector
+<<<<<<< HEAD
 from app.services.gradcam import GradCAMExplainer
 from app.services.audio_visual import AudioVisualConsistency
 from app.core.config import settings
 
 
 def predict_verdict(fake_prob):
+=======
+from app.services.classifier import DeepfakeClassifier, AggregationMethod
+from app.core.config import settings
+
+def predict_verdict(fake_prob):
+    """Determine video verdict based on fake probability threshold.
+    
+    Only considers FAKE if fake_prob > 60%, otherwise REAL.
+    """
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     real_prob = 1 - fake_prob
     margin = abs(fake_prob - real_prob)
 
@@ -41,7 +63,10 @@ router = APIRouter()
 
 jobs = {}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 @router.post("/analyze")
 async def analyze_video(
     background_tasks: BackgroundTasks,
@@ -53,6 +78,10 @@ async def analyze_video(
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
 
+<<<<<<< HEAD
+=======
+    # Security: Use Path to safely extract extension and filename
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     file_path = Path(file.filename)
     ext = file_path.suffix.lower() if file_path.suffix else ""
     if ext not in settings.ALLOWED_VIDEO_TYPES:
@@ -63,8 +92,14 @@ async def analyze_video(
 
     upload_path = settings.UPLOAD_DIR / f"{job_id}{ext}"
 
+<<<<<<< HEAD
     with open(upload_path, "wb") as f:
         chunk_size = 1024 * 1024
+=======
+    # Security: Write file in chunks to avoid loading entire file into memory
+    with open(upload_path, "wb") as f:
+        chunk_size = 1024 * 1024  # 1MB chunks
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         total_size = 0
         while True:
             chunk = await file.read(chunk_size)
@@ -72,6 +107,10 @@ async def analyze_video(
                 break
             total_size += len(chunk)
             if total_size > settings.MAX_UPLOAD_SIZE:
+<<<<<<< HEAD
+=======
+                # Clean up partial upload
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
                 f.close()
                 upload_path.unlink()
                 raise HTTPException(status_code=400, detail="File too large")
@@ -83,17 +122,30 @@ async def analyze_video(
         "video_id": job_id,
     }
 
+<<<<<<< HEAD
     model_manager = request.app.state.model_manager
     background_tasks.add_task(process_video_task, job_id, upload_path, model_manager)
+=======
+    background_tasks.add_task(process_video_task, job_id, upload_path, request)
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
     return {"job_id": job_id, "status": JobStatus.PENDING}
 
 
+<<<<<<< HEAD
 async def process_video_task(job_id: str, video_path: Path, model_manager):
     start_time = time.time()
     try:
         jobs[job_id]["status"] = JobStatus.PROCESSING
 
+=======
+async def process_video_task(job_id: str, video_path: Path, request: Request):
+    try:
+        jobs[job_id]["status"] = JobStatus.PROCESSING
+
+        model_manager = request.app.state.model_manager
+
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         video_processor = VideoProcessor(fps=settings.VIDEO_FPS)
 
         processor_config = getattr(model_manager, "_processor_config", None)
@@ -105,9 +157,12 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
             model_config=processor_config,
         )
 
+<<<<<<< HEAD
         gradcam_explainer = GradCAMExplainer(model_manager.model)
         audio_visual_analyzer = AudioVisualConsistency(device=str(model_manager.device))
 
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         metadata = video_processor.get_metadata(video_path)
 
         frame_predictions = []
@@ -119,7 +174,11 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
         face_frames_info = []
 
         for frame in video_processor.extract_frames(video_path):
+<<<<<<< HEAD
             detection = await face_detector.detect_faces(
+=======
+            detection = face_detector.detect_faces(
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
                 frame.data, frame.frame_idx, frame.timestamp
             )
 
@@ -130,7 +189,11 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
                     face_tensor = face_detector.preprocess_for_model(face_crop)
 
                     face_tensors_batch.append(face_tensor)
+<<<<<<< HEAD
                     face_frames_info.append({"frame": frame, "face": best_face, "crop": face_crop})
+=======
+                    face_frames_info.append({"frame": frame, "face": best_face})
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
                     if len(face_tensors_batch) >= target_num_frames:
                         break
@@ -143,7 +206,15 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
         import torch
         import numpy as np
 
+<<<<<<< HEAD
         face_tensors_batch = np.array(face_tensors_batch, dtype=np.float32)
+=======
+        if face_tensors_batch:
+            types = [type(x).__name__ for x in face_tensors_batch[:3]]
+            logger.info(f"Batch types: {types}")
+            face_tensors_batch = np.array(face_tensors_batch, dtype=np.float32)
+
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         face_tensor = torch.tensor(face_tensors_batch, dtype=torch.float32)
 
         label, confidence = model_manager.predict(face_tensor)
@@ -153,11 +224,21 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
         probs = model_manager._get_probabilities(face_tensor)
         fake_prob = float(probs[0])
         real_prob = float(probs[1])
+<<<<<<< HEAD
+=======
+        
+        logger.info(f"=== MODEL OUTPUT ===")
+        logger.info(f"Raw probs: fake={fake_prob:.4f}, real={real_prob:.4f}")
+        logger.info(f"Face tensors shape: {face_tensor.shape}")
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
         for i, info in enumerate(face_frames_info):
             frame = info["frame"]
             best_face = info["face"]
+<<<<<<< HEAD
             face_crop = info["crop"]
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
             frame_label = "FAKE" if fake_prob >= 0.65 else "REAL"
             frame_conf = fake_prob if frame_label == "FAKE" else real_prob
@@ -181,6 +262,7 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
             )
             frame_predictions.append(frame_pred)
 
+<<<<<<< HEAD
             if gradcam_explainer.cam is not None:
                 try:
                     face_tensor_single = face_detector.preprocess_for_model(face_crop)
@@ -207,6 +289,8 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
                 except Exception as e:
                     logger.warning(f"GradCAM failed for frame {frame.frame_idx}: {e}")
 
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         if not frame_predictions:
             jobs[job_id]["status"] = JobStatus.FAILED
             jobs[job_id]["error"] = "No faces detected"
@@ -214,8 +298,17 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
 
         fake_scores = [fp.confidence for fp in frame_predictions]
         video_fake_score = sum(fake_scores) / len(fake_scores)
+<<<<<<< HEAD
 
         video_label, confidence_level, video_confidence = predict_verdict(video_fake_score)
+=======
+        
+        logger.info(f"Video fake score: {video_fake_score:.4f}")
+        
+        video_label, confidence_level, video_confidence = predict_verdict(video_fake_score)
+        
+        logger.info(f"Final verdict: {video_label} ({confidence_level}) confidence={video_confidence:.2f}")
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
         video_prediction = VideoPredictionSchema(
             video_id=job_id,
@@ -223,6 +316,7 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
             confidence=video_confidence,
             confidence_level=confidence_level,
             fake_score=video_fake_score,
+<<<<<<< HEAD
             aggregation_method="average",
             frame_predictions=frame_predictions,
         )
@@ -247,14 +341,26 @@ async def process_video_task(job_id: str, video_path: Path, model_manager):
             )
 
         processing_time = time.time() - start_time
+=======
+            aggregation_method=AggregationMethod.AVERAGE.value,
+            frame_predictions=frame_predictions,
+        )
+
+        audio_visual = AudioVisualSchema(
+            sync_score=0.5, is_desynced=False, confidence=0.0, temporal_alignment=[]
+        )
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
         jobs[job_id]["status"] = JobStatus.COMPLETED
         jobs[job_id]["video_prediction"] = video_prediction
         jobs[job_id]["audio_visual"] = audio_visual
         jobs[job_id]["gradcam_visualizations"] = gradcam_visualizations
+<<<<<<< HEAD
         jobs[job_id]["processing_time"] = processing_time
 
         logger.info(f"Video analysis completed in {processing_time:.2f}s")
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
     except Exception as e:
         logger.error(f"Processing failed: {e}")
@@ -276,13 +382,17 @@ async def get_result(job_id: str):
         response.video_prediction = job.get("video_prediction")
         response.audio_visual = job.get("audio_visual")
         response.gradcam_visualizations = job.get("gradcam_visualizations")
+<<<<<<< HEAD
         response.processing_time = job.get("processing_time")
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     elif job["status"] == JobStatus.FAILED:
         response.error_message = job.get("error", "Unknown error")
 
     return response
 
 
+<<<<<<< HEAD
 @router.get("/results/{job_id}/gradcam/{frame_idx}")
 async def get_gradcam_heatmap(job_id: str, frame_idx: int):
     heatmap_path = settings.UPLOAD_DIR / f"{job_id}_gradcam_{frame_idx}.png"
@@ -299,6 +409,8 @@ async def get_gradcam_overlay(job_id: str, frame_idx: int):
     return FileResponse(str(heatmap_path), media_type="image/png")
 
 
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 @router.delete("/result/{job_id}")
 async def delete_result(job_id: str):
     if job_id not in jobs:
@@ -310,8 +422,11 @@ async def delete_result(job_id: str):
     if video_path and Path(video_path).exists():
         Path(video_path).unlink()
 
+<<<<<<< HEAD
     upload_dir = settings.UPLOAD_DIR
     for gradcam_file in upload_dir.glob(f"{job_id}_gradcam_*.png"):
         gradcam_file.unlink()
 
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     return {"message": "Job deleted"}

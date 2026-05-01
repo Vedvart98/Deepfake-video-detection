@@ -30,7 +30,11 @@ except ImportError:
 
 
 try:
+<<<<<<< HEAD
     from transformers import Wav2Vec2Model, Wav2Vec2Processor
+=======
+    from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
     TRANSFORMERS_AVAILABLE = True
 except ImportError:
@@ -60,6 +64,7 @@ class AudioVisualConsistency:
         self.sync_threshold = sync_threshold
         self.wav2vec_processor = None
         self.wav2vec_model = None
+<<<<<<< HEAD
         self._models_loaded = False
 
     async def ensure_models_loaded(self):
@@ -78,22 +83,57 @@ class AudioVisualConsistency:
                 "facebook/wav2vec2-base-960h"
             )
             self.wav2vec_model = Wav2Vec2Model.from_pretrained(
+=======
+        self._load_models()
+
+    def _load_models(self):
+        """Load Wav2Vec2 for audio feature extraction."""
+        if not TRANSFORMERS_AVAILABLE:
+            logger.warning("Transformers not available, using fallback")
+            return
+
+        try:
+            self.wav2vec_processor = Wav2Vec2Processor.from_pretrained(
+                "facebook/wav2vec2-base-960h"
+            )
+            self.wav2vec_model = Wav2Vec2ForCTC.from_pretrained(
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
                 "facebook/wav2vec2-base-960h"
             )
             self.wav2vec_model = self.wav2vec_model.to(self.device)
             self.wav2vec_model.eval()
+<<<<<<< HEAD
             self._models_loaded = True
             logger.info("Loaded Wav2Vec2 model")
         except Exception as e:
             logger.warning(f"Could not load Wav2Vec2: {e}")
             self._models_loaded = True
+=======
+            logger.info("Loaded Wav2Vec2 model")
+        except Exception as e:
+            logger.warning(f"Could not load Wav2Vec2: {e}")
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
     async def analyze_video(
         self, video_path: Path, face_frames: List[np.ndarray], fps: float
     ) -> AudioVisualResult:
+<<<<<<< HEAD
         """Analyze audio-visual consistency of a video."""
         await self.ensure_models_loaded()
 
+=======
+        """
+        Analyze audio-visual consistency of a video.
+
+        Args:
+            video_path: Path to video file
+            face_frames: List of face crops from frames
+            fps: Frames per second
+
+        Returns:
+            AudioVisualResult with sync analysis
+        """
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         audio, sr = self._extract_audio(video_path)
 
         if audio is None:

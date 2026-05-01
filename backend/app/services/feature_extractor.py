@@ -33,14 +33,21 @@ class ModelConfig:
 
     # ViT settings
     vit_model: str = "deit_small_patch16_224"
+<<<<<<< HEAD
     vit_pretrained: bool = False
+=======
+    vit_pretrained: bool = True
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     vit_embed_dim: int = 384
     vit_num_heads: int = 6
     vit_depth: int = 12
     vit_mlp_ratio: float = 4.0
     vit_drop_rate: float = 0.0
     vit_attn_drop_rate: float = 0.0
+<<<<<<< HEAD
     image_size: int = 224
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
     # Fusion settings
     fusion_hidden_dim: int = 1024
@@ -115,7 +122,11 @@ class ViTBranch(nn.Module):
         mlp_ratio: float = 4.0,
         drop_rate: float = 0.0,
         attn_drop_rate: float = 0.0,
+<<<<<<< HEAD
         pretrained: bool = False,
+=======
+        pretrained: bool = True,
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     ):
         super().__init__()
 
@@ -145,10 +156,15 @@ class ViTBranch(nn.Module):
 
         self.norm = nn.LayerNorm(embed_dim)
 
+<<<<<<< HEAD
+=======
+        # Load pretrained DeiT weights if available
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         if pretrained and TRANSFORMERS_AVAILABLE:
             self._load_pretrained()
 
     def _load_pretrained(self):
+<<<<<<< HEAD
         try:
             from transformers import DeiTModel, DeiTConfig
             
@@ -166,6 +182,28 @@ class ViTBranch(nn.Module):
             logger.info("Note: For pretrained weights, install timm and use timm.create_model()")
         except ImportError:
             logger.warning("transformers not installed. Using random initialization.")
+=======
+        """Load pretrained DeiT weights."""
+        try:
+            from transformers import DeiTForImageClassification
+
+            pretrained_model = DeiTForImageClassification.from_pretrained(
+                "facebook/deit-small-patch16-224",
+            )
+
+            with torch.no_grad():
+                self.patch_embed.weight.copy_(
+                    pretrained_model.deit.embeddings.patch_embeddings.projection.weight
+                )
+                self.patch_embed.bias.copy_(
+                    pretrained_model.deit.embeddings.patch_embeddings.projection.bias
+                )
+
+            with torch.no_grad():
+                self.cls_token.copy_(pretrained_model.deit.embeddings.cls_token)
+
+            logger.info("Loaded pretrained DeiT-Small weights")
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         except Exception as e:
             logger.warning(f"Could not load pretrained DeiT weights: {e}")
 
@@ -399,7 +437,11 @@ class HCiTModel(nn.Module):
         if x.dim() == 5:
             # Video input: [B, T, C, H, W]
             batch_size, num_frames = x.shape[:2]
+<<<<<<< HEAD
             x = x.reshape(batch_size * num_frames, *x.shape[2:])
+=======
+            x = x.view(batch_size * num_frames, *x.shape[2:])
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
             was_video = True
         else:
             was_video = False

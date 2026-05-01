@@ -20,9 +20,14 @@ opencv-python==4.9.0.80
 opencv-python-headless==4.9.0.80
 
 # Audio Processing
+<<<<<<< HEAD
 librosa==0.10.1
 soundfile==0.12.1
 transformers==4.36.2
+=======
+# librosa==0.10.1
+soundfile==0.12.1
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
 # Video Processing
 av==12.0.0

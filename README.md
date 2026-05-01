@@ -1,6 +1,10 @@
 # DeepFake Sentinel
 
+<<<<<<< HEAD
 A comprehensive deepfake video detection system using **HCiT (Hybrid CNN + Vision Transformer)** architecture with multi-modal analysis (visual + audio-visual consistency), **Grad-CAM explainability**, and production-ready deployment.
+=======
+A deepfake video detection system that uses an EfficientNet-B4 model trained via fastai, with YOLOv8 face detection and temporal aggregation for robust video-level predictions.
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
 ## System Architecture
 
@@ -15,6 +19,7 @@ A comprehensive deepfake video detection system using **HCiT (Hybrid CNN + Visio
 │  Module 2: Face Detection (YOLOv8)                                   │
 │      │                                                              │
 │      ▼                                                              │
+<<<<<<< HEAD
 │  Module 3: Feature Extraction (HCiT - CNN + ViT)                     │
 │      │                                                              │
 │      ├──────────────────────────────────────┐                       │
@@ -31,29 +36,55 @@ A comprehensive deepfake video detection system using **HCiT (Hybrid CNN + Visio
 │                                                             │       │
 │                                                             ▼       │
 │                                                     Module 7: Web UI  │
+=======
+│  Module 3: Frame Classification (EfficientNet-B4)                   │
+│      │                                                              │
+│      ▼                                                              │
+│  Module 4: Temporal Aggregation & Video-Level Prediction            │
+│      │                                                              │
+│      ▼                                                              │
+│  Module 5: API & Web Interface                                      │
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Features
 
+<<<<<<< HEAD
 - **HCiT Architecture**: Hybrid CNN (ResNet50) + Vision Transformer (DeiT-Small) with Cross-Attention Fusion
 - **YOLOv8 Face Detection**: High-accuracy face detection with quality assessment
 - **Grad-CAM Explainability**: Visual heatmaps showing manipulated regions
 - **Audio-Visual Consistency**: Lip-sync analysis using Wav2Vec2 and cross-correlation
 - **Multi-Frame Aggregation**: Attention-based video-level prediction
 - **Modern Tech Stack**: FastAPI + React 18 + TypeScript + Tailwind CSS
+=======
+- **EfficientNet-B4 Model**: Trained on Kaggle using fastai with MixUp, CutMix, and mixed precision (FP16)
+- **YOLOv8 Face Detection**: High-accuracy face detection and cropping from video frames
+- **Temporal Aggregation**: Multiple aggregation methods (average, max, voting, attention) for video-level predictions
+- **Progressive Training**: Freeze/unfreeze strategy with differential learning rates and early stopping
+- **FastAPI Backend**: Async REST API with job tracking and WebSocket support
+- **Modern Frontend**: React 18 + Vite + TypeScript with Tailwind CSS
+- **Model Compatibility**: fastai `load_learner` export format (`.pkl`)
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
 ## Tech Stack
 
 | Component | Technology |
 |-----------|------------|
 | Backend | FastAPI + Python 3.11 |
+<<<<<<< HEAD
 | Deep Learning | PyTorch 2.x |
 | Primary Model | HCiT (ResNet50 + DeiT-Small) |
 | Face Detection | YOLOv8-Face |
 | Audio Processing | librosa, Wav2Vec2 |
 | Explainability | Grad-CAM, HiResCAM, AblationCAM |
+=======
+| Deep Learning | fastai 2.x / PyTorch 2.x |
+| Model Architecture | EfficientNet-B4 |
+| Face Detection | YOLOv8 (Ultralytics) |
+| Training Platform | Kaggle Notebooks |
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 | Frontend | React 18 + Vite + TypeScript |
 | Styling | Tailwind CSS |
 | Containerization | Docker |
@@ -64,6 +95,7 @@ A comprehensive deepfake video detection system using **HCiT (Hybrid CNN + Visio
 deepfake-sentinel/
 ├── backend/                 # Python FastAPI Backend
 │   ├── app/
+<<<<<<< HEAD
 │   │   ├── api/            # API endpoints (video analysis)
 │   │   ├── core/          # Configuration
 │   │   ├── models/         # Pydantic schemas
@@ -88,6 +120,63 @@ deepfake-sentinel/
 │   │   └── services/       # API client
 │   └── package.json
 └── README.md
+=======
+│   │   ├── api/            # API endpoints (video analysis, health, model info)
+│   │   ├── core/          # Configuration and settings
+│   │   ├── models/         # Pydantic schemas
+│   │   ├── services/       # Business logic
+│   │   │   ├── face_detector.py    # YOLOv8 face detection
+│   │   │   ├── classifier.py        # Frame/video classification & aggregation
+│   │   │   ├── video_processor.py  # Video frame extraction
+│   │   │   └── gradcam.py          # Explainability (Grad-CAM)
+│   │   └── ml/
+│   │       ├── model_manager.py  # fastai model loading & inference
+│   │       └── inference.py       # ML utilities
+│   ├── models/             # Trained model weights (deepfake_model-3.pkl)
+│   └── tests/             # Backend tests
+├── frontend/               # React + Vite Frontend
+│   ├── src/
+│   │   ├── components/     # UI components
+│   │   ├── hooks/          # Custom React hooks
+│   │   └── services/       # API client
+│   └── package.json
+├── notebooks/              # Training & experimentation notebooks
+│   └── deepfake.ipynb    # Kaggle training notebook (EfficientNet-B4)
+├── docs/                   # Documentation
+└── scripts/                # Utility scripts
+```
+
+## Training Notebook
+
+The model was trained using the Kaggle notebook located at `notebooks/deepfake.ipynb`.
+
+### Notebook Details
+
+| Attribute | Value |
+|-----------|-------|
+| Model Architecture | EfficientNet-B4 |
+| Input Image Size | 380×380 (optimal for B4) |
+| Framework | fastai 2.x |
+| Mixed Precision | FP16 (`to_fp16()`) |
+| Augmentation | MixUp, CutMix, affine transforms, lighting |
+| Training Strategy | Progressive unfreezing (freeze → unfreeze) |
+| Learning Rate | Differential LR (`slice(1e-5, 1e-3)`) |
+| Callbacks | EarlyStopping, SaveModel, MixUp |
+| Metrics | Accuracy, F1Score, Precision, Recall |
+| Frames per Video | 12 (uniform extraction) |
+| Temporal Aggregation | Average, Max, Weighted, Voting |
+
+### Datasets Used
+
+- **FaceForensics++ (FF++)** — Real: `original/` | Fake: `Deepfakes/`, `Face2Face/`, `FaceSwap/`, `FaceShifter/`, `NeuralTextures/`, `DeepFakeDetection/`
+- **DeepFake Detection (DFD)** — Real and manipulated sequences
+
+### Export Format
+
+The notebook exports the trained model as `deepfake_model.pkl` using `learn.export()`, compatible with fastai's `load_learner()`. Place the exported model at:
+```
+backend/models/deepfake_model-3.pkl
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 ```
 
 ## Quick Start
@@ -96,18 +185,30 @@ deepfake-sentinel/
 
 - Python 3.11+
 - Node.js 18+
+<<<<<<< HEAD
 - CUDA-capable GPU (recommended for training and inference)
+=======
+- CUDA-capable GPU (recommended for inference)
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
 ### Backend Setup
 
 ```bash
 cd backend
+<<<<<<< HEAD
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Download YOLOv8 model (for face detection)
 python -m app.ml.download_models
+=======
+python -m venv deepfake
+source deepfake/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# Place your trained model at backend/models/deepfake_model-3.pkl
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
 # Run the server
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -131,6 +232,7 @@ docker-compose up --build
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+<<<<<<< HEAD
 | POST | `/api/v1/analyze` | Analyze a video for deepfakes |
 | GET | `/api/v1/result/{job_id}` | Get analysis results (includes GradCAM + Audio-Visual) |
 | GET | `/api/v1/health` | Health check |
@@ -236,10 +338,57 @@ Parameters: ~25M (efficient for production deployment)
 - Results with confidence scores
 - GradCAM heatmap visualization
 - Audio-Visual sync status
+=======
+| POST | `/api/v1/analyze` | Submit a video for deepfake analysis |
+| GET | `/api/v1/result/{job_id}` | Get analysis results by job ID |
+| GET | `/api/v1/health` | Health check |
+| GET | `/api/v1/model/info` | Model information and metadata |
+
+## Modules
+
+### Module 1: Video Input Processing
+- Accepts video uploads (MP4, AVI, MOV, WebM)
+- Extracts frames uniformly across video duration
+- Configurable frames-per-video for inference
+
+### Module 2: Face Detection (YOLOv8)
+- Detects faces in each frame using YOLOv8
+- Bounding box extraction with confidence scores
+- Fallback to OpenCV if Ultralytics is unavailable
+- Face quality assessment
+
+### Module 3: Frame Classification (EfficientNet-B4)
+- Each detected face frame is classified by the fastai EfficientNet-B4 model
+- Returns per-frame predictions with confidence scores
+- Binary classification: **Real** / **Fake**
+
+### Module 4: Temporal Aggregation
+- Aggregates frame-level predictions to video-level decision
+- Multiple methods: `average`, `max`, `voting`, `attention`
+- Configurable aggregation strategy per video
+
+### Module 5: API & Web Interface
+- RESTful API with async job processing
+- React frontend with drag-and-drop video upload
+- Real-time analysis progress via polling
+- Results visualization with per-frame confidence
+
+## Model Loading
+
+The backend uses fastai's `load_learner` to load the exported `.pkl` model:
+
+```python
+from fastai.learner import load_learner
+learn = load_learner("backend/models/deepfake_model-3.pkl")
+```
+
+**Note:** `load_learner` uses Python's pickle module. Only load model files you trust. The warning is expected behavior for fastai exported models.
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
 ## Evaluation Metrics
 
 - Accuracy
+<<<<<<< HEAD
 - Precision / Recall
 - F1-Score
 - AUC-ROC
@@ -269,6 +418,38 @@ Check active model at: `GET /api/v1/model/info`
 - Install `librosa` and `torchaudio`
 - Download Wav2Vec2 model (happens automatically)
 - Check video contains audio track
+=======
+- Precision
+- Recall
+- F1-Score
+- AUC-ROC
+
+## Known Issues & Fixes
+
+### fastai `learn.recorder` Errors
+
+The notebook cells using `learn.recorder.plot()`, `learn.recorder.plot_loss()`, and `learn.recorder.plot_metrics()` will raise `AttributeError` because:
+
+1. **`learn.lr_find()` in fastai v2** automatically displays the LR plot — calling `learn.recorder.plot()` is unnecessary and causes errors if the recorder isn't registered as an attribute.
+2. **`plot_loss()` and `plot_metrics()`** are not available in fastai v2's `Recorder`. Use `ShowGraphCallback` during training instead:
+
+```python
+# Fix: Use ShowGraphCallback for plotting during training
+learn.fit_one_cycle(3, 1e-3, cbs=[ShowGraphCallback()])
+
+# Fix: lr_find() auto-plots in v2, no need for learn.recorder.plot()
+learn.lr_find()
+```
+
+### fastai `load_learner` Pickle Warning
+
+The warning about insecure pickle is expected for fastai-exported models. To suppress it:
+
+```python
+import warnings
+warnings.filterwarnings("ignore", message=".*load_learner.*pickle.*")
+```
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
 ## License
 
@@ -276,6 +457,7 @@ MIT License
 
 ## Acknowledgments
 
+<<<<<<< HEAD
 This project is based on research from:
 - **HCiT**: Hybrid CNN and Image Transformer for Deepfake Detection (IEEE 2025)
 - FaceForensics++ Dataset
@@ -284,3 +466,11 @@ This project is based on research from:
 - pytorch-grad-cam
 - Ultralytics YOLOv8
 - HuggingFace Transformers (Wav2Vec2)
+=======
+This project uses:
+- [FaceForensics++ Dataset](https://github.com/ondyari/FaceForensics)
+- [DeepFake Detection Dataset (DFD)](https://www.kaggle.com/datasets/shilongzhuang/deep-fake-detection-dfd-entire-original-dataset)
+- [fastai](https://github.com/fastai/fastai) — Deep learning framework
+- [Ultralytics YOLOv8](https://github.com/ultralytics/ultralytics) — Face detection
+- [EfficientNet (PyTorch)](https://pytorch.org/vision/main/models/efficientnet.html) — Model architecture
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b

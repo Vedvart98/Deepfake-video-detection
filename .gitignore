@@ -1,7 +1,11 @@
 # Environment
 .env
 .env.*
+<<<<<<< HEAD
 .env.example
+=======
+!.env.example
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
 # Python
 __pycache__/
@@ -70,6 +74,10 @@ backend/models/*.pkl
 !backend/models/.gitkeep
 deepfake/
 backend/deepfake
+<<<<<<< HEAD
 backend/Dockerfile
 backend/yolov8n.pt
 backend/data
+=======
+backend/Dockerfile
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b

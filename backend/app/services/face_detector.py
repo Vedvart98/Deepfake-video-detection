@@ -165,6 +165,7 @@ class FaceDetector:
             self._std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
             self._model_type = "imagenet"
 
+<<<<<<< HEAD
         self._model_path = model_path
         self._yolo_model_path = None
 
@@ -177,10 +178,28 @@ class FaceDetector:
             else:
                 self._yolo_model_path = "yolov8n.pt"  # Will download on first use
             self.model = None  # Lazy-loaded
+=======
+        if ULTRALYTICS_AVAILABLE:
+            if model_path and Path(model_path).exists():
+                logger.info(f"Loading face detector from {model_path}")
+                self.model = YOLO(str(model_path))
+            else:
+                # Use YOLOv8n from models directory
+                model_dir = Path(__file__).parent.parent / "models"
+                yolo_model_path = model_dir / "yolov8n.pt"
+                if yolo_model_path.exists():
+                    logger.info(f"Loading YOLOv8n from {yolo_model_path}")
+                    self.model = YOLO(str(yolo_model_path))
+                else:
+                    # Fallback: try to download standard yolov8n
+                    logger.info("Loading YOLOv8n model (downloading if needed)")
+                    self.model = YOLO("yolov8n.pt")
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         else:
             self.model = None
             logger.warning("Using OpenCV fallback for face detection")
 
+<<<<<<< HEAD
     async def ensure_model_loaded(self):
         """Lazy-load YOLOv8 model (non-blocking)."""
         if self.model is not None:
@@ -201,6 +220,22 @@ class FaceDetector:
         """Detect faces in a single frame."""
         await self.ensure_model_loaded()
         
+=======
+    def detect_faces(
+        self, frame: np.ndarray, frame_idx: int = 0, timestamp: float = 0.0
+    ) -> FaceDetectionResult:
+        """
+        Detect faces in a single frame.
+
+        Args:
+            frame: Input frame (BGR format)
+            frame_idx: Frame index
+            timestamp: Frame timestamp in seconds
+
+        Returns:
+            FaceDetectionResult with detected faces
+        """
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         result = FaceDetectionResult(
             frame_idx=frame_idx, timestamp=timestamp, image_shape=frame.shape
         )

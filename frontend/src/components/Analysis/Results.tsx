@@ -235,6 +235,7 @@ export default function Results() {
           </dl>
         </div>
       )}
+<<<<<<< HEAD
 
       {data?.gradcam_visualizations && data.gradcam_visualizations.length > 0 && (
         <div className="card">
@@ -262,6 +263,8 @@ export default function Results() {
           )}
         </div>
       )}
+=======
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     </div>
   )
 }

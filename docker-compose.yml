@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - model_cache:/app/models
+    environment:
+      - DEVICE=cuda
+    depends_on:
+      - redis
+    networks:
+      - deepfake-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend
+    networks:
+      - deepfake-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - deepfake-network
+
+networks:
+  deepfake-network:
+    driver: bridge
+
+volumes:
+  model_cache:

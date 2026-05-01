@@ -28,7 +28,11 @@ class GradCAMExplainer:
     """
 
     def __init__(
+<<<<<<< HEAD
         self, model: torch.nn.Module, target_layer_name: str = "cnn.features.7"
+=======
+        self, model: torch.nn.Module, target_layer_name: str = "vit.blocks[-1].norm1"
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     ):
         self.model = model
         self.model.eval()
@@ -43,6 +47,7 @@ class GradCAMExplainer:
 
         try:
             target_layers = self._get_target_layers()
+<<<<<<< HEAD
             if not target_layers:
                 logger.warning("No target layers found for Grad-CAM")
                 self.cam = None
@@ -57,6 +62,14 @@ class GradCAMExplainer:
                 cam_kwargs["reshape_transform"] = self._reshape_transform
 
             self.cam = GradCAM(**cam_kwargs)
+=======
+            self.cam = GradCAM(
+                model=self.model,
+                target_layers=target_layers,
+                # use_cuda removed in pytorch-grad-cam 1.5+
+                # Library auto-detects device from model
+            )
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         except Exception as e:
             logger.warning(f"Failed to setup Grad-CAM: {e}")
             self.cam = None
@@ -66,6 +79,7 @@ class GradCAMExplainer:
         layers = []
 
         for name, module in self.model.named_modules():
+<<<<<<< HEAD
             if name == self.target_layer_name:
                 layers.append(module)
                 break
@@ -105,10 +119,24 @@ class GradCAMExplainer:
 
         if not layers:
             logger.warning(f"No target layers found for Grad-CAM. target_layer_name={self.target_layer_name}")
+=======
+            if self.target_layer_name in name:
+                layers.append(module)
+
+        if not layers:
+            if hasattr(self.model, "cnn"):
+                for name, module in self.model.cnn.named_modules():
+                    if "layer4" in name and isinstance(module, torch.nn.Conv2d):
+                        layers.append(module)
+
+        if not layers and hasattr(self.model, "features"):
+            layers.append(self.model.features[-1])
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
         return layers
 
     def _reshape_transform(self, activations: torch.Tensor) -> torch.Tensor:
+<<<<<<< HEAD
         """Reshape ViT activations [B, seq_len, C] to [B, C, H, W] for Grad-CAM."""
         if activations.dim() == 3:
             batch_size, seq_len, channels = activations.shape
@@ -121,6 +149,20 @@ class GradCAMExplainer:
             activations = activations[:, 1:, :]
             activations = activations.reshape(batch_size, height, width, channels)
             activations = activations.permute(0, 3, 1, 2)
+=======
+        """Reshape ViT activations for Grad-CAM compatibility."""
+        if activations.dim() == 3:
+            batch_size, seq_len, channels = activations.shape
+            height = width = int(np.sqrt(seq_len - 1))
+
+            if height * width < seq_len - 1:
+                activations = activations[:, 1:, :]
+
+            activations = activations.reshape(batch_size, height, width, channels)
+            activations = activations.transpose(0, 3)
+            activations = activations.transpose(1, 2)
+
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         return activations
 
     def generate_heatmap(
@@ -153,7 +195,11 @@ class GradCAMExplainer:
             self.model = self.model.cuda()
 
         grayscale_cam = self.cam(
+<<<<<<< HEAD
             input_tensor, targets=targets
+=======
+            input_tensor, targets=targets, eigen_smooth=True, aug_smooth=False
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         )[0, :]
 
         return grayscale_cam

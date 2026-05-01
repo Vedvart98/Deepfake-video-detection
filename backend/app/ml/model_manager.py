@@ -1,17 +1,36 @@
+<<<<<<< HEAD
 """Model Manager - handles ML model lifecycle for deepfake detection."""
 import torch
 import torch.nn.functional as F
 from typing import Dict, Optional, Any, Tuple, List
+=======
+"""
+Model Manager - handles ML model lifecycle for deepfake detection.
+Loads fastai exported EfficientNet-B4 model - uses model directly for inference.
+"""
+
+import torch
+import torch.nn.functional as F
+from typing import Dict, Optional, Any, Tuple
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 from pathlib import Path
 from loguru import logger
 import numpy as np
 from PIL import Image
 
 from app.core.config import settings
+<<<<<<< HEAD
 from app.services.feature_extractor import HCiTModel, ModelConfig
 
 
 class ModelManager:
+=======
+
+
+class ModelManager:
+    """Manages ML model loading and inference."""
+
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
     def __init__(self, force_download: bool = False, resume_download: bool = True):
         self.device = torch.device(
             settings.DEVICE if torch.cuda.is_available() else "cpu"
@@ -20,6 +39,7 @@ class ModelManager:
         self.learn: Optional[Any] = None
         self._model_info: Dict = {}
         self._classes: list = ["real", "fake"]
+<<<<<<< HEAD
         self.model_type: str = "unknown"
 
     async def load_models(self):
@@ -69,16 +89,25 @@ class ModelManager:
         logger.info(f"Loaded HCiT model successfully from {model_path}")
 
     async def _load_fastai_model(self):
+=======
+
+    async def load_models(self):
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         from fastai.learner import load_learner
 
         logger.info(f"Loading fastai model on device: {self.device}")
 
+<<<<<<< HEAD
         model_path = settings.MODEL_DIR / "hcit_deepfake_model.pkl"
+=======
+        model_path = settings.MODEL_DIR / "deepfake_model-3.pkl"
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
         if not model_path.exists():
             logger.error(f"Model not found at: {model_path}")
             raise FileNotFoundError(f"Model not found: {model_path}")
 
+<<<<<<< HEAD
         self.learn = load_learner(model_path, cpu=self.device.type == "cpu")
         self.model = self.learn.model
         self.model = self.model.to(self.device)
@@ -97,6 +126,32 @@ class ModelManager:
         }
 
         logger.info(f"Loaded fastai model successfully from {model_path}")
+=======
+        try:
+            self.learn = load_learner(model_path, cpu=self.device.type == "cpu")
+            self.model = self.learn.model
+
+            self.model = self.model.to(self.device)
+            self.model.eval()
+
+            if hasattr(self.learn, 'dls') and hasattr(self.learn.dls, 'c2i'):
+                self._classes = list(self.learn.dls.c2i.keys())
+
+            self._model_info = {
+                "name": "EfficientNet-B4 (fastai)",
+                "version": "1.0.0",
+                "device": str(self.device),
+                "model_path": str(model_path),
+                "classes": self._classes,
+            }
+
+            logger.info(f"Loaded fastai model successfully from {model_path}")
+            logger.info(f"Classes: {self._classes}")
+
+        except Exception as e:
+            logger.error(f"Failed to load model: {e}")
+            raise
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
     async def unload_models(self):
         if self.model:
@@ -112,6 +167,7 @@ class ModelManager:
         logger.info("Models unloaded")
 
     def predict(self, face_tensors: torch.Tensor) -> Tuple[str, float]:
+<<<<<<< HEAD
         if self.model is None:
             raise RuntimeError("No model loaded")
 
@@ -168,14 +224,36 @@ class ModelManager:
     def _predict_fastai(self, face_tensors: torch.Tensor) -> Tuple[str, float]:
         if self.model is None:
             raise RuntimeError("No model loaded")
+=======
+        """
+        Predict using the fastai model directly (not using learn.predict).
+        
+        Args:
+            face_tensors: Image tensor [C, H, W] or [B, C, H, W]
+        
+        Returns:
+            Tuple of (label: str, confidence: float)
+            - label: "real" or "fake"
+            - confidence: probability score (0-1)
+        """
+        if self.model is None:
+            raise RuntimeError("No model loaded")
+
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         return self._predict_torch(face_tensors)
 
     def _get_probabilities(self, face_tensors: torch.Tensor) -> np.ndarray:
         if self.model is None:
             raise RuntimeError("No model loaded")
+<<<<<<< HEAD
 
         current_dim = face_tensors.dim()
 
+=======
+            
+        current_dim = face_tensors.dim()
+        
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
         if current_dim == 5:
             batch_size, num_frames = face_tensors.shape[:2]
             face_tensors = face_tensors.view(batch_size * num_frames, *face_tensors.shape[2:])
@@ -260,6 +338,7 @@ class ModelManager:
 
         return label, confidence
 
+<<<<<<< HEAD
     def get_frame_predictions(self, face_tensors: torch.Tensor) -> List[Tuple[str, float, float]]:
         if self.model is None:
             raise RuntimeError("No model loaded")
@@ -284,6 +363,44 @@ class ModelManager:
             results.append((label, confidence, fake_prob))
 
         return results
+=======
+    def predict_from_image(self, image_path: str) -> Tuple[str, float]:
+        if self.model is None:
+            raise RuntimeError("No model loaded")
+
+        from PIL import Image
+        import numpy as np
+
+        img = Image.open(image_path)
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+
+        img_array = np.array(img).astype(np.float32) / 255.0
+        img_tensor = torch.from_numpy(img_array).permute(2, 0, 1).unsqueeze(0)
+
+        mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1)
+        std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1)
+        img_tensor = (img_tensor - mean) / std
+        img_tensor = img_tensor.to(self.device)
+
+        with torch.no_grad():
+            outputs = self.model(img_tensor)
+            if hasattr(outputs, 'logits'):
+                outputs = outputs.logits
+            probs = F.softmax(outputs, dim=1)
+
+        if hasattr(probs, 'numpy'):
+            probs = probs.numpy()
+        else:
+            probs = np.array(probs)
+
+        pred_idx = int(probs[0].argmax())
+        confidence = float(probs[0].max())
+
+        label = self._classes[pred_idx] if pred_idx < len(self._classes) else ("fake" if pred_idx == 1 else "real")
+
+        return label, confidence
+>>>>>>> 65700e59945d1b65257bc1d543bb8839aa765b7b
 
     def get_model_info(self) -> Dict:
         return self._model_info.copy()
