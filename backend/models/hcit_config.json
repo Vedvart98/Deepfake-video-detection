@@ -1,0 +1,18 @@
+{
+  "cnn_model": "resnet50",
+  "cnn_pretrained": false,
+  "cnn_freeze_layers": 0,
+  "vit_model": "deit_small_patch16_224",
+  "vit_pretrained": false,
+  "vit_embed_dim": 384,
+  "vit_num_heads": 6,
+  "vit_depth": 12,
+  "vit_mlp_ratio": 4.0,
+  "vit_drop_rate": 0.0,
+  "fusion_hidden_dim": 1024,
+  "dropout": 0.3,
+  "num_classes": 2,
+  "output_dim": 512,
+  "image_size": 224,
+  "vit_attn_drop_rate": 0.0
+}
